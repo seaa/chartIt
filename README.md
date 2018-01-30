@@ -29,18 +29,23 @@ Server runs on port 8888 as default. POSTing to '/' will generate a chart using 
 
 This body must follow the next format:
 
-```{
+```javascript
+{
   type: String,
   data: Object,
   options: Object
-}```
+}
+```
  
 Where the supported types are line, bar, pie, and doughnut. Documentation for data and options formats is available in Chart.js official [doc](http://www.chartjs.org/docs/latest/)
 
 This request will return the following obhect:
-```{
+
+```javascript
+{
   chart: String,
-}```
+}
+```
 
 Where 'chart' will be the base64 string representation of the chart image, ready to be rendered as a png.
 
