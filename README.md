@@ -4,7 +4,7 @@
 
 ## What is this?
 
-A server that provides and API to generate charts from custom data, and returns the image base64 representation to use on web apps.
+A server that provides an API to generate charts from custom data, and returns the image base64 representation to be used on web apps.
 
 ChartIt uses [chartjs-node](https://github.com/vmpowerio/chartjs-node) to render [chartjs](https://github.com/chartjs/Chart.js) charts server-side.
 
@@ -25,7 +25,7 @@ Start the server
 
 ## Generate Chart
 
-POSTing to '/' will generate a chart using data on the request body.
+Server runs on port 8888 as default. POSTing to '/' will generate a chart using data on the request body.
 
 This body must follow the next format:
 
@@ -35,14 +35,16 @@ This body must follow the next format:
   options: Object
 }`
  
-Where the supported types are line, bar, pie, and doughnut. Chartit uses the same data and options format the chart.js Documentation is available in Chart.js official (doc)[http://www.chartjs.org/docs/latest/]
+Where the supported types are line, bar, pie, and doughnut. Chartit uses the same data and options formats that Chart.js
 
-The request will return the following obhect:
+Documentation is available in Chart.js official (doc)[http://www.chartjs.org/docs/latest/]
+
+This request will return the following obhect:
 `{
   chart: String,
 }`
 
-Where 'chart' will be `data:image/png;base64,${streamResult.toString('base64')}` the base64 string representation of the chart image, ready to be rendered as a png.
+Where 'chart' will be the base64 string representation of the chart image, ready to be rendered as a png.
 
 Use example:
 ```javascript
