@@ -1,0 +1,31 @@
+{
+  "name": "chartit",
+  "version": "0.0.1",
+  "description": "Codetronic's chartit backend",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
+    "start": "npm run build && node dist/src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "Santiago Avalos",
+  "license": "MIT",
+  "dependencies": {
+    "chart.js": "^2.6.0",
+    "chartjs-node": "^1.6.0",
+    "debug": "~2.6.9",
+    "express": "~4.15.5",
+    "log4js": "^2.3.7",
+    "morgan": "~1.9.0",
+    "request": "^2.83.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "rimraf": "^2.6.2"
+  }
+}
