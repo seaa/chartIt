@@ -3,19 +3,20 @@ var http = require('http');
 var url = require('url');
 var routesHandler = require('./routes/index');
 var logger = require('./services/logger');
+var constants = require('./services/constants');
 var morgan = require('morgan');
 var loggerMorgan = morgan(
   '[:date[iso]] ":method :url HTTP/:http-version" :status :res[content-length] ":user-agent" - :response-time ms'
 );
 
-const PORT = process.env.PORT ? process.env.PORT : 8888;
+const PORT = process.env.PORT ? process.env.PORT : constants.port;
 
-var handlers = {
+const handlers = {
   '/': routesHandler.chartit,
 };
 
-var server = {
-  router: function (handlers, pathname, response, request, postData) {
+const router = {
+  router: (handlers, pathname, response, request, postData) => {
     if (typeof handlers[pathname] === 'function') {
       handlers[pathname](response, request, postData);
     } else {
@@ -24,16 +25,18 @@ var server = {
       response.write('404 Not found');
       response.end();
     }
-  },
-  
-  start: function (router, handlers) {
+  }
+}
+
+const start = {
+  start: (router, handlers) => {
     function onRequest(request, response) {
       loggerMorgan(request, response, function(err) {
         return err;
       });
       var pathname = url.parse(request.url).pathname;
       var postData = '';
-
+      
       request.addListener('data', postDataChunk => {
         logger.debug(
           'Received POST data chunk (value inside brackets): [%s]',
@@ -41,7 +44,7 @@ var server = {
         );
         postData += postDataChunk;
       });
-
+      
       request.addListener('end', () => {
         logger.debug(
           'All POST data received (value inside brackets): [%s]',
@@ -49,15 +52,21 @@ var server = {
         );
         router(handlers, pathname, response, request, postData);
       });
-
+      
       request.addListener('error', err => {
         logger.error('Error in request: ', err.stack);
       });
-    }
+    };
 
     http.createServer(onRequest).listen(PORT);
     logger.info('Server has started on port %s', PORT);
   }
+}
+
+const ChartitServer = () => {
+  return Object.assign({}, router, start);
 };
 
+/// Main process
+let server = ChartitServer();
 server.start(server.router, handlers);
