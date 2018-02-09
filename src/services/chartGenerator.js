@@ -1,4 +1,5 @@
 const ChartjsNode = require('chartjs-node');
+var constants = require('./constants');
 var logger = require('./logger');
 
 const plugin_whiteBackground = {
@@ -31,16 +32,6 @@ const chartTypes = new Map([
   ['doughnut', formatDoughnut]
 ]);
 
-const chartColors = [
-  'rgb(255, 159, 64)', // orange
-  'rgb(54, 162, 235)', // blue
-  'rgb(75, 192, 192)', // green
-  'rgb(255, 99, 132)', // red
-  'rgb(255, 205, 86)', // yellow
-  'rgb(153, 102, 255)', // purple
-  'rgb(201, 203, 207)' // grey
-];
-
 function scaffoldConfig(d) {
   let config = {
     size: {
@@ -61,8 +52,8 @@ function formatLine(data) {
   let config = scaffoldConfig(data);
   config.chartParams.data.datasets.forEach(function(item, index) {
     item.fill = false;
-    item.backgroundColor = chartColors[index % chartColors.length];
-    item.borderColor = chartColors[index % chartColors.length];
+    item.backgroundColor = constants.colors[index % constants.colors.length];
+    item.borderColor = constants.colors[index % constants.colors.length];
   });
   return scaffoldConfig(data);
 }
@@ -71,8 +62,8 @@ function formatBar(data) {
   logger.debug('formatBar called with data: [%s]', JSON.stringify(data));
   let config = scaffoldConfig(data);
   config.chartParams.data.datasets.forEach(function(item, index) {
-    item.backgroundColor = chartColors[index % chartColors.length];
-    item.borderColor = chartColors[index % chartColors.length];
+    item.backgroundColor = constants.colors[index % constants.colors.length];
+    item.borderColor = constants.colors[index % constants.colors.length];
   });
   return scaffoldConfig(data);
 }
@@ -81,7 +72,7 @@ function formatDoughnut(data) {
   logger.debug('formatPie called with data: [%s]', JSON.stringify(data));
   let config = scaffoldConfig(data);
   config.chartParams.data.datasets = [config.chartParams.data.datasets[0]];
-  config.chartParams.data.datasets[0].backgroundColor = chartColors;
+  config.chartParams.data.datasets[0].backgroundColor = constants.colors;
   config.chartParams.options.scales.xAxes[0].display = false;
   config.chartParams.options.scales.yAxes[0].display = false;
   return config;
