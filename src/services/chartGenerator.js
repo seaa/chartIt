@@ -1,29 +1,7 @@
 const ChartjsNode = require('chartjs-node');
 var constants = require('./constants');
+var plugins = require('./plugins');
 var logger = require('./logger');
-
-const plugin_whiteBackground = {
-  beforeDraw: function(chartInstance) {
-    var ctx = chartInstance.chart.ctx;
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
-  }
-};
-
-const plugin_piePercentages = {
-  beforeInit: function(chartInstance) {
-    var ctx = chartInstance.chart.ctx;
-    var totalPercentage = 0;
-    chartInstance.chart.config.data.labels.forEach(function(label, index) {
-      totalPercentage += chartInstance.chart.config.data.datasets[0].data[index];
-    });
-    chartInstance.chart.config.data.labels.forEach(function(label, index) {
-      var percentage = chartInstance.chart.config.data.datasets[0].data[index] * 100 / totalPercentage;
-      percentage = parseFloat(percentage.toFixed(2));
-      chartInstance.chart.config.data.labels[index] = label + ' (' + percentage + '%)';
-    });
-  }
-};
 
 const chartTypes = new Map([
   ['line', formatLine],
@@ -87,9 +65,9 @@ function drawChart(config) {
     );
 
     chartNode.on('beforeDraw', function(Chartjs) {
-      Chartjs.pluginService.register(plugin_whiteBackground);
+      Chartjs.pluginService.register(plugins.whiteBackground);
       if (config.chartParams.type === 'pie') {
-        Chartjs.pluginService.register(plugin_piePercentages);
+        Chartjs.pluginService.register(plugins.piePercentages);
       }
     });
 
