@@ -1,11 +1,12 @@
 const ChartjsNode = require('chartjs-node');
 var constants = require('./constants');
 var plugins = require('./plugins');
+var formats = require('./formats');
 var logger = require('./logger');
 
 const chartTypes = new Map([
-  ['line', formatLine],
-  ['bar', formatBar],
+  ['line', formats.basic],
+  ['bar', formats.basic],
   ['pie', formatDoughnut],
   ['doughnut', formatDoughnut]
 ]);
@@ -33,7 +34,7 @@ function formatLine(data) {
     item.backgroundColor = constants.colors[index % constants.colors.length];
     item.borderColor = constants.colors[index % constants.colors.length];
   });
-  return scaffoldConfig(data);
+  return config;
 }
 
 function formatBar(data) {
@@ -43,7 +44,7 @@ function formatBar(data) {
     item.backgroundColor = constants.colors[index % constants.colors.length];
     item.borderColor = constants.colors[index % constants.colors.length];
   });
-  return scaffoldConfig(data);
+  return config;
 }
 
 function formatDoughnut(data) {
@@ -93,14 +94,14 @@ function newChart(data) {
   logger.info('rendering chart');
   
   if (!data || !data.type) {
-    return new Promise((resolve, reject) => {
-      reject('Non valid body.');
-    });
+    return new Promise((resolve, reject) => {reject('Non valid body.');});
   }
   
-  let config = chartTypes.get(data.type)(data);
-  logger.debug(JSON.stringify(config, null, 2));
-  return drawChart(config);
+  if (!chartTypes.get(data.type)) {
+    return new Promise((resolve, reject) => {reject('Invalid chart type.');});
+  }
+  
+  return drawChart(chartTypes.get(data.type)(data));
 }
 
 exports.newChart = newChart;
