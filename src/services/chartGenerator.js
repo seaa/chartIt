@@ -1,45 +1,15 @@
 const ChartjsNode = require('chartjs-node');
+var constants = require('./constants');
+var plugins = require('./plugins');
+var formats = require('./formats');
 var logger = require('./logger');
 
-const plugin_whiteBackground = {
-  beforeDraw: function(chartInstance) {
-    var ctx = chartInstance.chart.ctx;
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
-  }
-};
-
-const plugin_piePercentages = {
-  beforeInit: function(chartInstance) {
-    var ctx = chartInstance.chart.ctx;
-    var totalPercentage = 0;
-    chartInstance.chart.config.data.labels.forEach(function(label, index) {
-      totalPercentage += chartInstance.chart.config.data.datasets[0].data[index];
-    });
-    chartInstance.chart.config.data.labels.forEach(function(label, index) {
-      var percentage = chartInstance.chart.config.data.datasets[0].data[index] * 100 / totalPercentage;
-      percentage = parseFloat(percentage.toFixed(2));
-      chartInstance.chart.config.data.labels[index] = label + ' (' + percentage + '%)';
-    });
-  }
-};
-
 const chartTypes = new Map([
-  ['line', formatLine],
-  ['bar', formatBar],
+  ['line', formats.basic],
+  ['bar', formats.basic],
   ['pie', formatDoughnut],
   ['doughnut', formatDoughnut]
 ]);
-
-const chartColors = [
-  'rgb(255, 159, 64)', // orange
-  'rgb(54, 162, 235)', // blue
-  'rgb(75, 192, 192)', // green
-  'rgb(255, 99, 132)', // red
-  'rgb(255, 205, 86)', // yellow
-  'rgb(153, 102, 255)', // purple
-  'rgb(201, 203, 207)' // grey
-];
 
 function scaffoldConfig(d) {
   let config = {
@@ -61,27 +31,27 @@ function formatLine(data) {
   let config = scaffoldConfig(data);
   config.chartParams.data.datasets.forEach(function(item, index) {
     item.fill = false;
-    item.backgroundColor = chartColors[index % chartColors.length];
-    item.borderColor = chartColors[index % chartColors.length];
+    item.backgroundColor = constants.colors[index % constants.colors.length];
+    item.borderColor = constants.colors[index % constants.colors.length];
   });
-  return scaffoldConfig(data);
+  return config;
 }
 
 function formatBar(data) {
   logger.debug('formatBar called with data: [%s]', JSON.stringify(data));
   let config = scaffoldConfig(data);
   config.chartParams.data.datasets.forEach(function(item, index) {
-    item.backgroundColor = chartColors[index % chartColors.length];
-    item.borderColor = chartColors[index % chartColors.length];
+    item.backgroundColor = constants.colors[index % constants.colors.length];
+    item.borderColor = constants.colors[index % constants.colors.length];
   });
-  return scaffoldConfig(data);
+  return config;
 }
 
 function formatDoughnut(data) {
   logger.debug('formatPie called with data: [%s]', JSON.stringify(data));
   let config = scaffoldConfig(data);
   config.chartParams.data.datasets = [config.chartParams.data.datasets[0]];
-  config.chartParams.data.datasets[0].backgroundColor = chartColors;
+  config.chartParams.data.datasets[0].backgroundColor = constants.colors;
   config.chartParams.options.scales.xAxes[0].display = false;
   config.chartParams.options.scales.yAxes[0].display = false;
   return config;
@@ -96,9 +66,9 @@ function drawChart(config) {
     );
 
     chartNode.on('beforeDraw', function(Chartjs) {
-      Chartjs.pluginService.register(plugin_whiteBackground);
+      Chartjs.pluginService.register(plugins.whiteBackground);
       if (config.chartParams.type === 'pie') {
-        Chartjs.pluginService.register(plugin_piePercentages);
+        Chartjs.pluginService.register(plugins.piePercentages);
       }
     });
 
@@ -124,14 +94,14 @@ function newChart(data) {
   logger.info('rendering chart');
   
   if (!data || !data.type) {
-    return new Promise((resolve, reject) => {
-      reject('Non valid body.');
-    });
+    return new Promise((resolve, reject) => {reject('Non valid body.');});
   }
   
-  let config = chartTypes.get(data.type)(data);
-  logger.debug(JSON.stringify(config, null, 2));
-  return drawChart(config);
+  if (!chartTypes.get(data.type)) {
+    return new Promise((resolve, reject) => {reject('Invalid chart type.');});
+  }
+  
+  return drawChart(chartTypes.get(data.type)(data));
 }
 
 exports.newChart = newChart;

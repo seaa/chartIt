@@ -35,6 +35,7 @@ var handlers = {
     .then(streamResult => {
       var src = `data:image/png;base64,${streamResult.toString('base64')}`;
       _fillResponse(200, '{ "chart": "' + src + '" }', response);
+      //_fillResponse(200, '<html><div> <img src="' + src + '" > </div><html>', response);
     })
     .catch(err => {
       logger.error('status: %s, on charter.newChart, details: ' + err, 500);
