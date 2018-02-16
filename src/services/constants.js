@@ -1,4 +1,6 @@
 const PORT = 8888;
+const HEIGHT = 600;
+const WIDTH = 600;
 
 const COLORS = [
   'rgb(255, 159, 64)', // orange
@@ -12,5 +14,7 @@ const COLORS = [
 
 module.exports = {
   port: PORT,
-  colors: COLORS
+  colors: COLORS,
+  height: HEIGHT,
+  width: WIDTH
 };

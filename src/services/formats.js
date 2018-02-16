@@ -4,8 +4,8 @@ var logger = require('./logger');
 var _baseConfig = (data) => {
   let config = {
     size: {
-      chartWidth: data.chartWidth || 600,
-      chartHeight: data.chartHeight || 600
+      chartWidth: data.chartWidth || constants.width,
+      chartHeight: data.chartHeight || constants.height
     },
     chartParams: {
       type: data.type,
@@ -19,10 +19,7 @@ var _baseConfig = (data) => {
 // Line and Bar charts
 function basic(data) {
   logger.debug('basic format called with data: [%s]', JSON.stringify(data));
-  let config = _baseConfig(data);
-  config.chartParams.data.datasets.forEach(function(item, index) {
-  });
-  return config;
+  return _baseConfig(data);
 }
 
 // Pie and Doughnut charts
