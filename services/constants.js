@@ -12,9 +12,14 @@ const COLORS = [
   'rgb(201, 203, 207)' // grey
 ];
 
+const METHODS = new Map([
+  ['chartit', ['POST']],
+]);
+
 module.exports = {
   port: PORT,
   colors: COLORS,
   height: HEIGHT,
-  width: WIDTH
+  width: WIDTH,
+  methodsMap: METHODS
 };
