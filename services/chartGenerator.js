@@ -7,55 +7,9 @@ var logger = require('./logger');
 const chartTypes = new Map([
   ['line', formats.basic],
   ['bar', formats.basic],
-  ['pie', formatDoughnut],
-  ['doughnut', formatDoughnut]
+  ['pie', formats.pie],
+  ['doughnut', formats.pie]
 ]);
-
-function scaffoldConfig(d) {
-  let config = {
-    size: {
-      chartWidth: d.chartWidth || 600,
-      chartHeight: d.chartHeight || 600
-    },
-    chartParams: {
-      type: d.type,
-      data: d.data,
-      options: d.options || {}
-    }
-  };
-  return config;
-}
-
-function formatLine(data) {
-  logger.debug('formatLine called with data: [%s]', JSON.stringify(data));
-  let config = scaffoldConfig(data);
-  config.chartParams.data.datasets.forEach(function(item, index) {
-    item.fill = false;
-    item.backgroundColor = constants.colors[index % constants.colors.length];
-    item.borderColor = constants.colors[index % constants.colors.length];
-  });
-  return config;
-}
-
-function formatBar(data) {
-  logger.debug('formatBar called with data: [%s]', JSON.stringify(data));
-  let config = scaffoldConfig(data);
-  config.chartParams.data.datasets.forEach(function(item, index) {
-    item.backgroundColor = constants.colors[index % constants.colors.length];
-    item.borderColor = constants.colors[index % constants.colors.length];
-  });
-  return config;
-}
-
-function formatDoughnut(data) {
-  logger.debug('formatPie called with data: [%s]', JSON.stringify(data));
-  let config = scaffoldConfig(data);
-  config.chartParams.data.datasets = [config.chartParams.data.datasets[0]];
-  config.chartParams.data.datasets[0].backgroundColor = constants.colors;
-  config.chartParams.options.scales.xAxes[0].display = false;
-  config.chartParams.options.scales.yAxes[0].display = false;
-  return config;
-}
 
 function drawChart(config) {
   logger.debug('drawChart called with config: [%s]', JSON.stringify(config));
